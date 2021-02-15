@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--Load Bootstrap-->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+
+  <title>My Webpage</title>
+
+</head>
+
+<body>
+
+  <!--Bootstrap navbar component-->
+  <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="index.html">ENGO 551 - Lab 1</a>
+      <div class="col-sm-5">
+      </div>
+      <div class="col-sm-3">
+        <form id="form_register" name="form_register" method="POST" action="{{ url_for('login') }}" class="form-inline">
+          <div class="form-group">
+            <div class="input-group">
+              <input class="form-control" placeholder="Username" type="text" name="existingUname">
+              <input class="form-control" placeholder="Password" type="password" name="existingPass">
+              <span class="input-group-btn">
+                <button type="submit" class="btn btn-primary">Log In</button>
+              </span>
+            </div>
+          </div>
+        </form>
+    </div>
+    {% if session.user_id %}
+    <form action="{{ url_for('logout') }}">
+      <button type="submit" class="btn btn-primary" name="signOut" >Sign Out</button>
+    </form>
+    {% else %}
+    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Register</button>
+    {% endif %}
+  </nav>
+
+
+  <div class="container-fluid" id="mainContainer">
+    <h2>Welcome to Buuk.</h2>
+    <p>An ENGO 551 Python/Flask thing by Mikko Ramos</p>
+
+    {% for message in get_flashed_messages() %}
+        <div class="alert alert-info" role="alert">{{ message }}</div>
+    {% endfor %}
+
+    {% if session.user_id %}
+      <form id="form_search" name="form_search" method="POST" action="{{ url_for('search') }}" class="form-inline">
+        <div class="form-group">
+          <div class="input-group">
+            <input class="form-control" placeholder="Search for a book..." type="text" name="searchText">
+            <span class="input-group-btn">
+              <button type="submit" class="btn btn-success">Submit</button>
+            </span>
+          </div>
+        </div>
+      </form>
+
+      <!--Book Presentation-->
+      {% if selection|length == 0 %}
+      <p>No results.</p>
+      {% else %}
+      <br/>
+      <h5>Results for {{ query }}</h5>
+      <p>Click on the title to go to the book's page.</p>
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ISBN</th>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Published</th>
+          </tr>
+        </thead>
+        {% for i in selection %}
+        <tbody>
+          <tr>
+            <td>{{ i.isbn_10 }}</td>
+            <td><a href="{{ url_for('book_page', isbn=i.isbn_10)}}">{{ i.title }}</a></td>
+            <td>{{ i.author }}</td>
+            <td>{{ i.year_pub }}</td>
+          </tr>
+        </tbody>
+        {% endfor %}
+      </table>
+      {% endif %}
+
+    {% else %}
+      <p>Please sign in or register to continue.</p>
+    {% endif %}
+
+
+  </div>
+
+  <!--New User Registration Modal-->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Registration Form</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="POST" action="{{ url_for('register') }}">
+          <div class="form-group">
+            <label for="exampleInputEmail1">Username</label>
+            <input type="text" class="form-control" name="newUname" placeholder="Enter a username">
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword1">Password</label>
+            <input type="password" class="form-control" name="newPass" placeholder="Enter a password">
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+</body>
+</html>
